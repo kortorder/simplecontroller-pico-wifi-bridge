@@ -1,0 +1,157 @@
+{
+  "contract": "SCX2 pressure extension format 3",
+  "pressureEncoding": "UInt16 big endian: round(normalized * 65535); zero released, 65535 full. 0.1=6554, 0.5=32768, 1=65535.",
+  "sequenceNote": "Decimal strings preserve UInt64.",
+  "vectors": [
+    {
+      "name": "pressure-hello",
+      "format": 3,
+      "kind": 1,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "00000000000000000000000000000000",
+      "challenge": "00000000000000000000000000000000",
+      "sequenceDecimal": "0",
+      "hidReady": false,
+      "capabilities": 1,
+      "state": null,
+      "hex": "534358320301000100112233445566778899aabbccddeeff00000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "name": "pressure-unavailable",
+      "format": 3,
+      "kind": 2,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "00000000000000000000000000000000",
+      "sequenceDecimal": "0",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": null,
+      "hex": "534358320302000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001000000000000000000000000000000000000000000000000"
+    },
+    {
+      "name": "pressure-ready",
+      "format": 3,
+      "kind": 2,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "0",
+      "hidReady": true,
+      "capabilities": 1,
+      "state": null,
+      "hex": "534358320302010100112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010000000000000000"
+    },
+    {
+      "name": "pressure-neutral-first",
+      "format": 3,
+      "kind": 3,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "1",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": {
+        "buttonMask": 0,
+        "hat": 8,
+        "axes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leftPressure": 0,
+        "rightPressure": 0
+      },
+      "hex": "534358320303000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f00111223344556677880000000000000001000000000000000100000800000000000000000000000000"
+    },
+    {
+      "name": "pressure-tenth-half",
+      "format": 3,
+      "kind": 3,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "2",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": {
+        "buttonMask": 0,
+        "hat": 8,
+        "axes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leftPressure": 6554,
+        "rightPressure": 32768
+      },
+      "hex": "534358320303000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010000000000000002000008000000000000000000199a8000"
+    },
+    {
+      "name": "pressure-mixed-full",
+      "format": 3,
+      "kind": 3,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "9007199254740993",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": {
+        "buttonMask": 597,
+        "hat": 3,
+        "axes": [
+          32767,
+          -32767,
+          1234,
+          -4321
+        ],
+        "leftPressure": 65535,
+        "rightPressure": 13107
+      },
+      "hex": "534358320303000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010020000000000001025503007fff800104d2ef1fffff3333"
+    },
+    {
+      "name": "pressure-ack",
+      "format": 3,
+      "kind": 4,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "9007199254740993",
+      "hidReady": true,
+      "capabilities": 0,
+      "state": null,
+      "hex": "534358320304010000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010020000000000001"
+    },
+    {
+      "name": "pressure-stop-max",
+      "format": 3,
+      "kind": 5,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "18446744073709551615",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": null,
+      "hex": "534358320305000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f00111223344556677880000000000000001ffffffffffffffff"
+    },
+    {
+      "name": "pressure-stopped-max",
+      "format": 3,
+      "kind": 6,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "18446744073709551615",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": null,
+      "hex": "534358320306000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f00111223344556677880000000000000001ffffffffffffffff"
+    }
+  ]
+}

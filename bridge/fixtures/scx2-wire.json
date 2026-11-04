@@ -1,0 +1,112 @@
+{
+  "contract": "SCX2 binary revision 1",
+  "sequenceNote": "Decimal strings preserve all UInt64 values for fixture readers. Wire uses UInt64 big endian.",
+  "vectors": [
+    {
+      "name": "hello",
+      "kind": 1,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "00000000000000000000000000000000",
+      "challenge": "00000000000000000000000000000000",
+      "sequenceDecimal": "0",
+      "hidReady": false,
+      "state": null,
+      "hex": "534358320201000000112233445566778899aabbccddeeff00000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "name": "ready",
+      "kind": 2,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "0",
+      "hidReady": true,
+      "state": null,
+      "hex": "534358320202010000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010000000000000000"
+    },
+    {
+      "name": "unavailable",
+      "kind": 2,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "00000000000000000000000000000000",
+      "sequenceDecimal": "0",
+      "hidReady": false,
+      "state": null,
+      "hex": "534358320202000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001000000000000000000000000000000000000000000000000"
+    },
+    {
+      "name": "neutral-first",
+      "kind": 3,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "1",
+      "hidReady": false,
+      "state": {
+        "buttonMask": 0,
+        "hat": 8,
+        "axes": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "hex": "534358320203000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010000000000000001000008000000000000000000"
+    },
+    {
+      "name": "mixed-precise-sequence",
+      "kind": 3,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "9007199254740993",
+      "hidReady": false,
+      "state": {
+        "buttonMask": 597,
+        "hat": 3,
+        "axes": [
+          32767,
+          -32767,
+          1234,
+          -4321
+        ]
+      },
+      "hex": "534358320203000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010020000000000001025503007fff800104d2ef1f"
+    },
+    {
+      "name": "ack",
+      "kind": 4,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "9007199254740993",
+      "hidReady": true,
+      "state": null,
+      "hex": "534358320204010000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010020000000000001"
+    },
+    {
+      "name": "stop-max",
+      "kind": 5,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "18446744073709551615",
+      "hidReady": false,
+      "state": null,
+      "hex": "534358320205000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f00111223344556677880000000000000001ffffffffffffffff"
+    },
+    {
+      "name": "stopped-max",
+      "kind": 6,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "18446744073709551615",
+      "hidReady": false,
+      "state": null,
+      "hex": "534358320206000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f00111223344556677880000000000000001ffffffffffffffff"
+    }
+  ]
+}
