@@ -1,0 +1,15 @@
+{
+  "wifi": {
+    "ssid": "",
+    "password": "",
+    "country": "USA"
+  },
+  "usb": {
+    "vid": "0xffff",
+    "pid": "0xffff",
+    "power_ma": 500,
+    "identity_reviewed": false,
+    "power_reviewed": false
+  },
+  "xac_port": "left"
+}

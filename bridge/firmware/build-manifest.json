@@ -1,0 +1,35 @@
+{
+  "sdk": {
+    "version": "2.3.1",
+    "commit": "079c6f39023649b154152db30f1d781e884879bc",
+    "url": "https://github.com/raspberrypi/pico-sdk"
+  },
+  "submodules": {
+    "lib/tinyusb": "86ad6e56c1700e85f1c5678607a762cfe3aa2f47",
+    "lib/lwip": "77dcd25a72509eb83f72b033d219b1d40cd8eb95",
+    "lib/cyw43-driver": "055d64274b014dd7b1c2fc94d26e8a18face7124"
+  },
+  "tools": [
+    {
+      "name": "cmake-4.3.4-macos-universal.tar.gz",
+      "url": "https://github.com/Kitware/CMake/releases/download/v4.3.4/cmake-4.3.4-macos-universal.tar.gz",
+      "sha256": "bf6647c78ac295c54dbe0a094d4428f495be93c1f810fd8bde57374e8b548523"
+    },
+    {
+      "name": "ninja-mac.zip",
+      "url": "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-mac.zip",
+      "sha256": "c99048673aa765960a99cf10c6ddb9f1fad506099ff0a0e137ad8960a88f321b"
+    },
+    {
+      "name": "arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi.tar.xz",
+      "url": "https://armkeil.blob.core.windows.net/developer/files/downloads/gnu/15.2.rel1/binrel/arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi.tar.xz",
+      "sha256": "1938a84b7105c192e3fb4fa5e893ba25f425f7ddab40515ae608cd40f68669a8"
+    },
+    {
+      "name": "picotool-2.3.1-mac.zip",
+      "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/picotool-2.3.1-mac.zip",
+      "sha256": "7bb3cea5d9f1b000fc758cf4b54774fda5c16a9899d342ef6b0c30138988793b",
+      "bytes": 1894547
+    }
+  ]
+}

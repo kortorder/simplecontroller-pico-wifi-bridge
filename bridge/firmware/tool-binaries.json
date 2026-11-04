@@ -1,0 +1,19 @@
+{
+  "provenance": "Extracted binaries from the previously SHA-256-verified official archives in build-manifest.json; cross-build-only tooling.",
+  "sha256": {
+    "cmake-4.3.4-macos-universal/CMake.app/Contents/bin/cmake": "793f1a2d459d102ca4768e26fbf6d413d45585f33c04f7c37a1cb8ef0790266f",
+    "ninja/ninja": "458cdf3a6cf289118da14cc897b5106d152c66545947329b016629d9df085815",
+    "picotool/picotool/picotool": "fc5efe24b29eeeef2fc9fa7d7b722ca0de6c2791119479114bdaff1db0234d4c",
+    "arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi/bin/arm-none-eabi-gcc": "1bc971726259e4b11e12dd2d97f5d89bf8a595667a5b08c423b8976b0c30d56f",
+    "arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi/bin/arm-none-eabi-g++": "87163a5e5d1cb93b07aa05d49a6fe290529f897642c6dd6ce5225085a2301e6e",
+    "arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi/bin/arm-none-eabi-size": "4ed1d484a9e3447f17277a3a297edb72b1c263b2465a8a59ba83849fcd5f1919",
+    "arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi/bin/arm-none-eabi-objcopy": "bef052130d1d14291862d2b6dd2e01474322cb1b7789420f4df8d68a04c53253",
+    "arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi/bin/arm-none-eabi-ld": "db297c6a3e77e3c60ab440a71a28080329146111c7d5a2983d4fb5b779a006cf",
+    "arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi/bin/arm-none-eabi-as": "dcdacbbfd85085be10f5fcddcedf497f984f38338f2dce3a27c7aa4a1b0407e3",
+    "arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi/libexec/gcc/arm-none-eabi/15.2.1/lto1": "07a7967343227183d5ad9cc53e3bf1d9063e0404c76bfa923b777a8faaec4e60",
+    "arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi/libexec/gcc/arm-none-eabi/15.2.1/lto-wrapper": "9de36ff449c2ffb5fe3c3ded297fd2c032913a3ce7724c4214016073211d5cc2",
+    "arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi/libexec/gcc/arm-none-eabi/15.2.1/cc1plus": "52341dd94c7b2c805c833037f51b6329b41ba9be48e10b8af326766110c7ef8f",
+    "arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi/libexec/gcc/arm-none-eabi/15.2.1/collect2": "8cfb9d75ad938f9f07c7c3374181fcdb8688455fbb646d29226d3b6b3e56accb",
+    "arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi/libexec/gcc/arm-none-eabi/15.2.1/cc1": "d374764b9a715e8b95181d00b399399ce9d18323d488f62dc1fd1a07116f980c"
+  }
+}
