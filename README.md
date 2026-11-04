@@ -1,5 +1,7 @@
 # SimpleController Wi-Fi Pico bridge
 
+[Download the complete phone bridge source ZIP](https://github.com/kortorder/simplecontroller-pico-wifi-bridge/raw/refs/heads/main/simplecontroller-pico-wifi-bridge-source.zip). Extract it before following the setup steps below.
+
 Use a Raspberry Pi **Pico W (RP2040)** as a USB joystick for SimpleController. The phone sends controls over the local Wi-Fi network to the Pico. The Pico connects by USB to a computer for testing, or to a side USB port on an Xbox Adaptive Controller (XAC). The XAC connects to the Xbox. The bridge uses SCX2 on UDP port **42736**.
 
 This repository contains source and build instructions. Build your own image with your local network settings. A USB-only Pico W has been tested with an iPhone and a Mac USB host. The Mac observed button presses and releases, stick movement, centering and neutral output after a stop. XAC recognition, Xbox gameplay and the optional physical analog circuit still need verification.
