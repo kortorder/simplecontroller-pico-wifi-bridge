@@ -1,0 +1,16 @@
+/bridge/firmware/local_config.*
+__pycache__/
+*.py[cod]
+.DS_Store
+/build*/
+*.uf2
+*.elf
+*.bin
+*.map
+*.dis
+*.o
+*.a
+*.pem
+*.key
+.env
+.env.*
