@@ -1,0 +1,23 @@
+Host verification on November21,2026
+
+These tests used synthetic I/O on a Mac. No Pico was flashed and no console input was sent. They do not establish electrical safety, radio latency or a new physical Xbox/PlayStation acceptance result. Existing physical evidence and remaining hardware checks are described in README.md.
+
+PASS: 59 SCX2 codec, receiver, lifecycle and HID host checks.
+No USB controller, Wi-Fi, firmware image, power draw or Xbox behavior was tested.
+PASS: 50 format3 proportional codec/backend/ownership checks. Fake backend only; no physical pressure output.
+PASS: 85 format4 USB trigger codec/mapping/lifecycle checks. No physical USB/XAC output.
+PASS: 104 XInput/format5 checks plus exhaustive trigger quantization. No physical Cronus/Xbox tested.
+PASS: 8 listener retry policy checks; no board/network/USB used.
+29 adapter assertions passed (live stall + USB triggers)
+29 adapter assertions passed (retirement stall + USB triggers)
+35 adapter assertions passed (live stall + USB triggers)
+35 adapter assertions passed (retirement stall + USB triggers)
+46 real-main chair relay assertions passed
+17 real-main relay PM failure assertions passed
+33 adapter assertions passed (live stall + USB triggers)
+34 adapter assertions passed (live stall + USB triggers)
+Confirmed old pool fails; relay three-slot pool passes with DHCP reserved
+PASS: 96 MCP4251 driver/SPI/gate/receiver host checks. Fake I/O only; no electrical or XAC measurement.
+PASS: 12 actual PicoTriggerIO gate/IRQ host-shim checks. No physical interrupt or electrical timing proof.
+PASS: 34 actual XInput driver/descriptor checks with fake TinyUSB host.
+240 chair relay assertions passed

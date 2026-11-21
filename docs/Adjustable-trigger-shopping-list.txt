@@ -1,0 +1,41 @@
+ADJUSTABLE LT / RT: PARTS FOR THE PROPOSED TWO-CHANNEL CIRCUIT
+Prepared 8 November 2026
+
+Purpose: retain adjustable values such as LT:0.5 and RT:0.7 on Xbox, using the existing phone/Wi-Fi Pico W plus two leads into the Adaptive Controller’s LT and RT sockets. USB button mode needs none of these extra parts: it supplies fully pressed/released triggers after X1/X2 are remapped in Xbox Accessories.
+
+STATUS: This is an unbuilt prototype, not a verified plug-in kit. Firmware tests do not validate its electrical behavior. Give this list and ANALOG_TRIGGER_HARDWARE.md to an electronics builder before ordering. They need to assemble it, review the grounding and power-loss protection, and measure it on a simulated load before connecting it to the Adaptive Controller. Capacitor sizing, relay timing and minimum reliable trigger pulse remain unmeasured and may require revisions. I can prepare software and instructions, but cannot perform that physical work remotely.
+
+EXACT COMPONENTS FOR THE CURRENT DESIGN
+1 x Microchip MCP4251-103E/P — DIP14, dual 10 kilohm digital potentiometer. Do not substitute the 100 kilohm version or MCP42010.
+2 x Panasonic AQW212EH — DIP8, dual normally-open PhotoMOS relay.
+1 x Microchip MCP120-300DI/TO — TO-92 voltage supervisor, D bondout.
+1 x Texas Instruments SN74HC08N — DIP14 AND gate.
+1 x onsemi 2N3904BU — TO-92 transistor.
+1 x onsemi 1N5817G — Schottky diode.
+1 x 100 microfarad polarized capacitor, rated at least 10 volts.
+3 x 100 nanofarad (0.1 microfarad) ceramic bypass capacitors.
+Resistors, 1% tolerance, 1/4 watt: four 220 ohm; one 100 ohm; one 1 kilohm; four 10 kilohm; two 100 kilohm.
+2 x four-conductor 3.5 mm TRRS plug terminal adapters, Adafruit product #2914 (or an electrically verified equivalent). The builder supplies insulated four-conductor wire of a suitable length. These are not ordinary mono switch cables.
+1 x insulated solderable prototype board and enclosure, with wire, Pico-header connections, cable strain relief and mounting hardware selected by the builder.
+
+REUSE WHAT YOU HAVE
+The phone/Wi-Fi Pico W with headers, its USB cable, and the compatible 5 V 2 A rear power adapter for the Adaptive Controller. A third Pico is not required. The chair Pico remains independent in the right USB port.
+
+BUILDER’S TEST EQUIPMENT / LOAD
+Multimeter and oscilloscope; regulated 1.8 V simulated reference; four additional 1 kilohm resistors and two additional 100 kilohm resistors for the two simulated XAC trigger loads (not included in the circuit resistor counts above). Verify neutral, independent and simultaneous trigger steps, stale packets, disconnect, reset, abrupt unplug and slow brownout before any XAC connection. The detailed wiring and acceptance procedure is in ANALOG_TRIGGER_HARDWARE.md.
+
+IMPORTANT CONNECTOR DETAIL
+On the XAC trigger jacks, the TRRS sleeve is the 1.8 V reference, not ground. On the Adafruit adapter the audio label GND refers to this sleeve. A builder must relabel and continuity-check it. Do not connect Pico GPIO or 3.3 V/5 V directly to an XAC trigger input.
+
+PART LINKS / PRIMARY SPECIFICATIONS
+MCP4251 manufacturer: https://www.microchip.com/en-us/product/MCP4251
+MCP4251-103E/P distributor: https://www.digikey.com/en/products/detail/microchip-technology/MCP4251-103E-P/1635683
+AQW212EH manufacturer: https://industry.panasonic.com/global/en/products/control/relay/photomos/number/aqw212eh
+MCP120 manufacturer: https://www.microchip.com/en-us/product/MCP120
+SN74HC08 manufacturer: https://www.ti.com/product/SN74HC08
+2N3904 datasheet: https://www.onsemi.com/pdf/datasheet/2n3904-d.pdf
+1N5817 datasheet: https://www.onsemi.com/download/data-sheet/pdf/1n5817-d.pdf
+TRRS plug adapter: https://www.adafruit.com/product/2914
+Microsoft XAC input specification: https://assets.xboxservices.com/assets/b8/05/b8055a56-827c-48f8-b8ec-2c7aa66ef069.pdf?n=xbox-adaptive-controller-input-device-specification_1.6_Finalpdf.pdf
+
+Prices, stock and shipping have not been promised. Exact component suffixes matter; ask the builder to review any substitute before purchase.

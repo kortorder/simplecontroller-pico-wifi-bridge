@@ -1,0 +1,75 @@
+{
+  "version": "0.22.0",
+  "date": "2026-11-08",
+  "checks": {
+    "legacy_codec_receiver_hid": 59,
+    "proportional_transport_fake_backend": 50,
+    "usb_trigger_codec_mapping_lifecycle": 85,
+    "real_adapter_live_stall_and_usb_trigger_callbacks": 27,
+    "real_adapter_retirement_stall_and_usb_trigger_callbacks": 27,
+    "listener_retry": 8,
+    "mcp4251_fake_io": 96,
+    "pico_trigger_gate_irq_shim": 12,
+    "private_build_wrapper": 14,
+    "local_wifi_setup": 14,
+    "discovery_loopback": 10
+  },
+  "cross_builds": {
+    "pico_w_mcp4251": "passed compile-only with synthetic credentials; not for deployment",
+    "pico_w_usb_only": "passed compile-only with synthetic credentials; not for deployment"
+  },
+  "production_source_sha256": {
+    "bridge/include/scx2.hpp": "4a85702a13b6b71c684b2852d8861d5e6bf54d171a817951d7275d3ee2379291",
+    "bridge/include/trigger_output.hpp": "6303b8f133d497efc1a9896f9e02a2e8551787dd226e520c8959a5988774c1da",
+    "bridge/src/scx2.cpp": "e894026cffb75db93e6e21af3c7bc5d6d0a9a89add7344eba98abb5035269482",
+    "bridge/firmware/main.cpp": "1f562c7e61220203f72ffa8e35c2877031deefa548707cddb4274046c0242007",
+    "bridge/firmware/usb_descriptors.cpp": "c1df709b0aab45d9286c2df92494ba190bbdecd226c4bc079609b1c37149fccb",
+    "bridge/firmware/listener_retry.hpp": "a2400942dc5ca4160a2b8e707d18d61817e9a95d659502a20b4f626607882f69",
+    "bridge/firmware/mcp4251_driver.hpp": "7f803c0449b7e10febb422e1022ddf46dd5fa039da071aad03851fdf4b558d4f",
+    "bridge/firmware/pico_trigger_output.hpp": "3389122d0803ec1a1f006d1e41edddbd5635347cb6adb047b140f7a0358c1c0a",
+    "bridge/firmware/lwipopts.h": "043df19ad9210debf3da8ab9a6ad08a5ff663825fa2e86048f38b6d600479982",
+    "bridge/firmware/tusb_config.h": "97c088f0e2af365010be6d95619b67fe2566a6aaf55e8490e34e2af37f982b0d",
+    "bridge/firmware/config.example.h": "8c2dce73e17382f5f00676d7901fb1f82cf30382acb7cb9ee9de01e5d44fd621",
+    "bridge/firmware/CMakeLists.txt": "7d1f98020236e29c40a08ae183ce4572ee38531369d06bbbda97d032d63d8283",
+    "bridge/firmware/build_private.py": "d5d7dcab026c5ebe2be348d20d5fbfefda1b258360b4351ba235ab8860a51478",
+    "bridge/firmware/tool-binaries.json": "230a61778c325ca17154a55d7ab5f06fee48c53d1d95b9b10410ff3bfdcf3599"
+  },
+  "not_tested_by_host_checks": [
+    "Physical USB trigger mapping in Xbox Accessories",
+    "Actual Xbox LT/RT gameplay",
+    "Electrical analog pressure or release timing"
+  ],
+  "privacy": "No Wi-Fi credentials, private images, configuration files or hardware logs are included.",
+  "physical_mac_usb_verification": {
+    "date": "2026-11-08",
+    "board": "Pico W / RP2040",
+    "firmware": "0.22",
+    "left_port_build": true,
+    "descriptor_verified": true,
+    "sequence": [
+      "neutral",
+      "LT only",
+      "LT and RT",
+      "RT only",
+      "released",
+      "LT+RT+A+left stick 40%",
+      "neutral",
+      "LT+RT held",
+      "STOP received and physical neutral"
+    ],
+    "passed": true,
+    "xbox_trigger_acceptance": "user-confirmed after X1/X2 mapping"
+  },
+  "xbox_user_acceptance": {
+    "date": "2026-11-08",
+    "basis": "User report after Xbox Accessories mapping",
+    "version": "0.22",
+    "ltRtPressAndRelease": true,
+    "chairRightStickWithPhoneTriggers": true,
+    "walkDriveWalkNoManualReconnect": true,
+    "analogPressureTested": false,
+    "physicalAndroidTested": false,
+    "actualGta6GameplayTested": false,
+    "userStatement": "All three checks work. LT and RT press and release correctly, they work with the chair joystick, and switching pages doesn\u2019t disconnect."
+  }
+}

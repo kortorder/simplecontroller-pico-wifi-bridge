@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-08",
+  "basis": "User report after Xbox Accessories mapping",
+  "version": "0.22",
+  "ltRtPressAndRelease": true,
+  "chairRightStickWithPhoneTriggers": true,
+  "walkDriveWalkNoManualReconnect": true,
+  "analogPressureTested": false,
+  "physicalAndroidTested": false,
+  "actualGta6GameplayTested": false,
+  "userStatement": "All three checks work. LT and RT press and release correctly, they work with the chair joystick, and switching pages doesn\u2019t disconnect."
+}

@@ -1,0 +1,72 @@
+{
+  "status": "software checked; physical two-Pico Bluetooth/Wi-Fi/XAC route not yet verified",
+  "phone_firmware_version": "0.24.0",
+  "relay_port": 42737,
+  "relay_format": 2,
+  "client_heartbeat_ms": 50,
+  "client_ack_timeout_ms": 250,
+  "chair_lease_ms": 250,
+  "upstream_lease_ms": 1000,
+  "maximum_combined_source_lease_ms_before_USB_service_latency": 1250,
+  "tests": {
+    "relay_client": 240,
+    "real_main_relay": 46,
+    "legacy": 59,
+    "analog": 50,
+    "usb_buttons": 85,
+    "xinput": 104,
+    "xinput_quantization": "all 65536 inputs",
+    "main_xac": [
+      29,
+      29
+    ],
+    "main_xinput": [
+      35,
+      35
+    ],
+    "xinput_device": 34,
+    "mcp4251": 96,
+    "pico_irq": 12,
+    "listener": 8,
+    "private_builder": 17,
+    "wifi_form": 14,
+    "discovery": 12,
+    "real_main_relay_pm_failure": 17,
+    "real_main_relay_startup_pm_success": 33,
+    "real_main_relay_startup_pm_failure": 34
+  },
+  "cross_builds": [
+    "default XAC",
+    "optional relay, compile-only synthetic config"
+  ],
+  "hardware_actions": "none",
+  "production_sha256": {
+    "bridge/include/scx2.hpp": "7c56807c4f23eb2e359cc6d2d0e2caf2f20f93ecc47e25cb7fd033d7abe43187",
+    "bridge/include/chair_relay_client.hpp": "982a7b2da4d512b4d3663f48edf82e282484f9f7e44454ad0dcda304e7ea10ea",
+    "bridge/src/scx2.cpp": "5e794b5ca4d8353498c669c66e682ccd9df0cd1ed71759306ffe9c52065fa0d7",
+    "bridge/firmware/main.cpp": "f51b9b7e539e135f908da0d1a811e2746a39489a7fe0b767ba2455242824a645",
+    "bridge/firmware/CMakeLists.txt": "356e5ce702ebd9c54bc2513ad203d777b7ac0e5392899a430e2f725ec200d8a4",
+    "bridge/firmware/build_private.py": "1cf5b85357a2cfb28a82cc456201af67623a2bd5b4a09471f0caf27e879999c3",
+    "bridge/firmware/lwipopts.h": "6b45b002bc207a26bedb8d1975aa9fef7c7f2639bce4e2f941cad8dba4cee9d6"
+  },
+  "address_lifetime_regression": "App and chair callback addresses stored inside pbuf are poisoned at pbuf_free; source validation, pinned peer and READY destination remain correct.",
+  "radio_power_management": "Relay builds only: CYW43_NONE_PM after station mode; failure disables relay, preserves ordinary app/USB. Physical latency result pending.",
+  "udp_pcb_pool": {
+    "default_slots": 2,
+    "relay_slots": 3,
+    "reserved_consumers": [
+      "DHCP client",
+      "app listener",
+      "chair relay socket"
+    ],
+    "old_configuration_regression": "Same finite-pool main adapter reproduces relay allocation failure with2 slots, passes with3. DHCP stays allocated.",
+    "sdk_memp_c_definitions_verified": {
+      "default": "SC_CHAIR_RELAY=0",
+      "relay": "SC_CHAIR_RELAY=1"
+    },
+    "compiled_UDP_PCB_pool_bytes": {
+      "default": 67,
+      "relay": 99
+    }
+  }
+}
