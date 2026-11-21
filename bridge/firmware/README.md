@@ -59,7 +59,13 @@ python3 bridge/firmware/build_private.py --sdk "$SC_DEPS/sdk" --tools "$SC_DEPS/
   --board pico_w --mode compile-only --trigger-output none --validate-only
 ```
 
-Remove `--validate-only` to build the USB-only candidate. Select `--trigger-output mcp4251` to cross-build the optional analog candidate. Compile-only images use placeholder network information and USB identity. Do not flash or distribute them.
+Remove `--validate-only` to build the USB-only candidate (format 2 plus the new format-4 full press/release LT/RT buttons). This image identifies as `SCX2 USB triggers 0.22`. Format 4 needs the matching app and X1→LT/X2→RT mappings in Xbox Accessories; it does not enable GPIO or analog pressure. Select `--trigger-output mcp4251` to cross-build the optional analog candidate. Compile-only images use placeholder network information and USB identity. Do not flash or distribute them.
+
+The optional `--chair-relay-address <IPv4>` flag adds forwarding of phone
+right-stick input to a compatible chair Pico on UDP42737. Omit it to retain the
+original behavior. It requires phone LEFT/chair RIGHT XAC USB ports and cannot
+be combined with XInput. See the [relay setup and fault behavior](../../docs/CHAIR_RIGHT_STICK_RELAY.md)
+before building either board. No app profiles or button mappings are rewritten.
 
 ## 3. Prepare one private USB-only image
 
@@ -88,3 +94,8 @@ Remove `--validate-only` to build the USB-only candidate. Select `--trigger-outp
 5. The command prints a new private build directory. Its `build/simplecontroller_bridge.uf2` is the file for the **Mac-first** BOOTSEL test. Check the redacted manifest reports `pico_w`, `rp2040`, `private` and `trigger_output: none`. Keep the UF2, ELF, private header and build log local. Return to the [USB setup steps](../../README.md#from-source-to-first-input).
 
 The optional pressure image needs the complete [trigger interface](../../docs/ANALOG_TRIGGER_HARDWARE.md), including independent power-fault protection and simulated-load validation.
+
+
+## Optional Cronus Zen XInput backend
+
+Add `--usb-output xinput --xinput-right-stick external --trigger-output none` for a chair + phone candidate. Keep the default `--usb-output xac` for the accepted Adaptive Controller path. These are separate images; neither removes the other's source or app mode. See [the Zen build, identity, connections and hardware checks](../../docs/CRONUS_ZEN.md). The wrapper includes the backend and right-stick ownership in its redacted manifest, rejects incompatible modes, and still never flashes a board.

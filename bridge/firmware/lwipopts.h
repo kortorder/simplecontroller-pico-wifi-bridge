@@ -16,7 +16,12 @@
 #define LWIP_NETIF_LINK_CALLBACK 1
 #define MEM_ALIGNMENT 4
 #define MEM_SIZE 16384
+#if defined(SC_CHAIR_RELAY) && SC_CHAIR_RELAY
+// DHCP retains one PCB; the app listener and optional chair socket need two more.
+#define MEMP_NUM_UDP_PCB 3
+#else
 #define MEMP_NUM_UDP_PCB 2
+#endif
 #define MEMP_NUM_SYS_TIMEOUT 12
 #define PBUF_POOL_SIZE 16
 #define LWIP_STATS 0

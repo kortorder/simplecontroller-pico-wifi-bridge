@@ -2,6 +2,7 @@
 """Offline private cross-build. No credential prompts, downloads, flashing or deployment."""
 import argparse
 import hashlib
+import ipaddress
 import json
 import os
 from pathlib import Path
@@ -124,11 +125,12 @@ def c_bytes(value):
     # Fixed-width octal escapes preserve UTF-8 and prevent C/preprocessor injection.
     return '"' + ''.join("\\%03o" % byte for byte in value.encode("utf-8")) + '"'
 
-def header(config):
+def header(config, chair_relay_address=None):
     return ("#pragma once\n#define SC_WIFI_SSID " + c_bytes(config["wifi"]["ssid"]) +
             "\n#define SC_WIFI_PASSWORD " + c_bytes(config["wifi"]["password"]) +
             "\n#define SC_WIFI_COUNTRY CYW43_COUNTRY_" + config["wifi"]["country"] +
-            "\n#define SC_UDP_PORT 42736\n#define SC_XAC_RIGHT_PORT " + str(int(config["xac_port"] == "right")) + "\n")
+            "\n#define SC_UDP_PORT 42736\n#define SC_XAC_RIGHT_PORT " + str(int(config["xac_port"] == "right")) + "\n" +
+            ("#define SC_CHAIR_RELAY_ADDRESS " + c_bytes(chair_relay_address) + "\n" if chair_relay_address else ""))
 
 def redacted_config(config, mode):
     return {"mode": mode, "wifi": "public compile-only placeholders" if mode == "compile-only" else "private; values omitted",
@@ -136,8 +138,8 @@ def redacted_config(config, mode):
             "usb_power_ma": config["usb"]["power_ma"], "xac_port": config["xac_port"], "udp_port": 42736}
 
 def public_sources():
-    return [ROOT / path for path in ["bridge/include/scx2.hpp", "bridge/include/trigger_output.hpp", "bridge/src/scx2.cpp",
-        "bridge/firmware/main.cpp", "bridge/firmware/usb_descriptors.cpp", "bridge/firmware/listener_retry.hpp",
+    return [ROOT / path for path in ["bridge/include/scx2.hpp", "bridge/include/chair_relay_client.hpp", "bridge/include/xinput_report.hpp", "bridge/include/trigger_output.hpp", "bridge/src/scx2.cpp",
+        "bridge/firmware/main.cpp", "bridge/firmware/xinput_device.cpp", "bridge/firmware/xinput_device.hpp", "bridge/firmware/usb_descriptors.cpp", "bridge/firmware/listener_retry.hpp",
         "bridge/firmware/mcp4251_driver.hpp", "bridge/firmware/pico_trigger_output.hpp",
         "bridge/firmware/lwipopts.h", "bridge/firmware/tusb_config.h", "bridge/firmware/config.example.h",
         "bridge/firmware/CMakeLists.txt", "bridge/firmware/build_private.py", "bridge/firmware/tool-binaries.json"]]
@@ -147,6 +149,9 @@ def main(argv=None):
     parser.add_argument("--board", choices=sorted(BOARD_PLATFORMS), default="pico_w", help="Exact board; default is RP2040 Pico W")
     parser.add_argument("--test-usb-identity", action="store_true", help="Compile-only: private test ID 1209:0001; never distribute or assume uniqueness")
     parser.add_argument("--mode", choices=["compile-only", "private"], default="compile-only")
+    parser.add_argument("--usb-output", choices=["xac", "xinput"], default="xac", help="Keep XAC HID (default), or build the experimental Cronus Zen XInput backend")
+    parser.add_argument("--xinput-right-stick", choices=["phone", "external"], default="phone", help="External keeps phone RX/RY neutral so the chair can own the right stick")
+    parser.add_argument("--chair-relay-address", help="Optional XAC-only right-stick relay to a fixed chair Pico IPv4 address, UDP42737")
     parser.add_argument("--trigger-output", choices=["none", "mcp4251"], default="none", help="mcp4251 requires the complete supervised analog circuit; never connect GPIO directly to XAC")
     parser.add_argument("--config", type=Path)
     parser.add_argument("--sdk", type=Path, default=DEFAULT_SDK)
@@ -161,10 +166,25 @@ def main(argv=None):
         raise BuildError("Private mode requires --config; compile-only mode refuses credential files.")
     if args.test_usb_identity and args.mode != "compile-only":
         raise BuildError("--test-usb-identity is only for compile-only builds; private configuration must specify its own reviewed identity.")
+    if args.usb_output == "xinput" and args.trigger_output != "none":
+        raise BuildError("XInput sends pressure over USB and cannot use the XAC analog circuit backend.")
+    if args.usb_output != "xinput" and args.xinput_right_stick != "phone":
+        raise BuildError("--xinput-right-stick external requires --usb-output xinput; XAC mapping is unchanged.")
+    if args.chair_relay_address:
+        try:
+            address = ipaddress.IPv4Address(args.chair_relay_address)
+        except ipaddress.AddressValueError:
+            raise BuildError("Chair relay requires a literal unicast IPv4 address.") from None
+        if address.is_multicast or address.is_unspecified or address.is_loopback or address.is_reserved or int(address) == 0xffffffff:
+            raise BuildError("Chair relay requires a unicast LAN IPv4 address.")
+        if args.usb_output != "xac":
+            raise BuildError("Chair relay is an XAC route and cannot be combined with XInput.")
     source = check_dependencies(args.sdk, args.tools)
     country_text = (args.sdk / "lib/cyw43-driver/src/cyw43_country.h").read_text()
     countries = set(re.findall(r"^#define CYW43_COUNTRY_([A-Z_]+)\s+CYW43_COUNTRY", country_text, re.MULTILINE))
     config = load_config(args.config, countries) if args.config else public_compile_config(args.test_usb_identity)
+    if args.chair_relay_address and config["xac_port"] != "left":
+        raise BuildError("The phone-to-chair relay requires phone Pico LEFT and chair Pico RIGHT XAC USB ports.")
     if args.validate_only:
         print("Validated pinned dependencies and " + args.mode + " configuration. No files built, deployed or downloaded.")
         return 0
@@ -177,7 +197,7 @@ def main(argv=None):
     else:
         output = Path(tempfile.mkdtemp(prefix="simplecontroller-private-build-", dir="/private/tmp"))
     private_header = output / "private-config.h"
-    private_header.write_text(header(config)); private_header.chmod(0o600)
+    private_header.write_text(header(config,args.chair_relay_address)); private_header.chmod(0o600)
     build = output / "build"
     sources = public_sources()
     source_before = {str(p.relative_to(ROOT)): digest(p) for p in sources}
@@ -187,6 +207,9 @@ def main(argv=None):
                  "-DPICO_SDK_PATH=" + str(args.sdk), "-DPICO_BOARD=" + args.board, "-DPICO_TOOLCHAIN_PATH=" + str(args.tools / ARM_ROOT),
                  "-Dpicotool_DIR=" + str(args.tools / "picotool/picotool"), "-DSC_USB_VID=" + config["usb"]["vid"],
                  "-DSC_USB_PID=" + config["usb"]["pid"], "-DSC_USB_POWER_MA=" + str(config["usb"]["power_ma"]),
+                 "-DSC_USB_XINPUT=" + ("ON" if args.usb_output == "xinput" else "OFF"),
+                 "-DSC_XINPUT_EXTERNAL_RS=" + ("ON" if args.xinput_right_stick == "external" else "OFF"),
+                 "-DSC_CHAIR_RELAY=" + ("ON" if args.chair_relay_address else "OFF"),
                  "-DSC_TRIGGER_MCP4251=" + ("ON" if args.trigger_output == "mcp4251" else "OFF"),
                  "-DSC_BRIDGE_CONFIG=" + str(private_header)],
                 [args.tools / TOOLS["cmake"], "--build", build, "--parallel", "4"]]
@@ -203,7 +226,9 @@ def main(argv=None):
         artifacts[file.name] = {"bytes": file.stat().st_size, "sha256": digest(file)}
     manifest = {"status": "Cross-built only; NOT hardware-proven or cleared for deployment", "board": args.board, "platform": BOARD_PLATFORMS[args.board],
                 "sdk": source["sdk"], "submodules": source["submodules"], "tools": source["tools"],
-                "configuration": {**redacted_config(config, args.mode), "trigger_output": args.trigger_output}, "artifacts": artifacts,
+                "configuration": {**redacted_config(config, args.mode), "trigger_output": args.trigger_output, "usb_output": args.usb_output, "xinput_right_stick": args.xinput_right_stick,
+                                  "chair_relay": bool(args.chair_relay_address), "chair_relay_address": "private; omitted" if args.chair_relay_address else None,
+                                  "chair_relay_port": 42737 if args.chair_relay_address else None}, "artifacts": artifacts,
                 "source_sha256": source_before,
                 "credential_warning": "Private headers, build logs and firmware images may contain credentials. Do not share them.",
                 "usb_identity_notice": "1209:0001 is a shared PRIVATE testing ID; never distribute/sell/manufacture with it. Check for another same-ID device before testing." if (config["usb"]["vid"].lower(), config["usb"]["pid"].lower()) == ("0x1209", "0x0001") else "No USB assignment/compliance is inferred from these values.",
