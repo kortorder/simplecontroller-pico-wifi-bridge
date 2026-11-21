@@ -1,5 +1,6 @@
 // Host-only test peer. It binds IPv4 loopback only and completes explicitly fake USB jobs.
 #include "scx2.hpp"
+#include "xinput_report.hpp"
 #include <arpa/inet.h>
 #include <sys/select.h>
 #include <sys/socket.h>
@@ -18,7 +19,7 @@ namespace {
 using Clock=std::chrono::steady_clock;
 std::uint64_t now() { return std::uint64_t(std::chrono::duration_cast<std::chrono::microseconds>(Clock::now().time_since_epoch()).count()); }
 scx2::Token token(void*) { scx2::Token t{}; t.fill(0x62); return t; }
-std::string hex(const scx2::HidReport& bytes) { std::ostringstream s; for(auto b:bytes)s<<std::hex<<std::setw(2)<<std::setfill('0')<<unsigned(b); return s.str(); }
+template<std::size_t N> std::string hex(const std::array<std::uint8_t,N>& bytes) { std::ostringstream s; for(auto b:bytes)s<<std::hex<<std::setw(2)<<std::setfill('0')<<unsigned(b); return s.str(); }
 std::vector<std::uint8_t> unhex(const std::string& raw) {
     if(raw.size()>160 || raw.size()%2) return {};
     std::vector<std::uint8_t> bytes;
@@ -53,11 +54,13 @@ int loopback_socket() {
 }
 }
 int main(int argc,char** argv) {
-    bool pressure_backend=false,auto_start=false,legacy_only=false;
+    bool pressure_backend=false,auto_start=false,legacy_only=false,usb_pressure=false,external_right_stick=false;
     unsigned duration_seconds=60;
     for(int i=1;i<argc;++i) {
         const std::string arg=argv[i];
         if(arg=="--pressure-backend") pressure_backend=true;
+        else if(arg=="--usb-pressure" || arg=="--xinput-backend") usb_pressure=true;
+        else if(arg=="--external-right-stick") external_right_stick=true;
         else if(arg=="--auto") auto_start=true;
         else if(arg=="--legacy-only") legacy_only=true;
         else if(arg=="--duration" && i+1<argc) {
@@ -65,21 +68,23 @@ int main(int argc,char** argv) {
             if(value.empty() || value.size()>4 || value.find_first_not_of("0123456789")!=std::string::npos) return 7;
             duration_seconds=unsigned(std::stoul(value));
             if(!duration_seconds || duration_seconds>3600) return 7;
-        } else { std::cerr<<"Usage: udp-peer [--pressure-backend] [--auto] [--legacy-only] [--duration 1..3600]\n";return 7; }
+        } else { std::cerr<<"Usage: udp-peer [--pressure-backend | --usb-pressure] [--external-right-stick] [--auto] [--legacy-only] [--duration 1..3600]\n";return 7; }
     }
-    if(pressure_backend && legacy_only) return 7;
+    if((external_right_stick && !usb_pressure) || (pressure_backend && usb_pressure) || ((pressure_backend || usb_pressure) && legacy_only)) return 7;
     const int fd=loopback_socket(), foreign=loopback_socket();
     if(fd<0 || foreign<0) { std::cerr<<"Loopback socket unavailable: "<<std::strerror(errno)<<'\n'; return 2; }
     sockaddr_in local{}; socklen_t length=sizeof(local);
     if(getsockname(fd,reinterpret_cast<sockaddr*>(&local),&length)<0) return 3;
     std::cout<<"PORT "<<ntohs(local.sin_port)<<std::endl;
     FakePressureBackend pressure;
-    scx2::Receiver receiver(token(nullptr),token,nullptr,pressure_backend ? &pressure : nullptr);
+    scx2::Receiver receiver(token(nullptr),token,nullptr,pressure_backend ? &pressure : nullptr,usb_pressure ? scx2::UsbOutput::xinput : scx2::UsbOutput::xac);
     receiver.set_usb_available(true,now()); auto initial=receiver.take_report(now()).value();
     (void)receiver.complete_report(initial.ticket,true,now());
     sockaddr_in peer{},old_peer{}; bool known=false,old_known=false,automatic=auto_start,drop_ack=false,discard=false;
     std::uint64_t received=0,rejected=0,completed=0,last_sequence=0;
     std::vector<unsigned> completed_buttons;
+    std::vector<std::string> completed_hid;
+    auto output_hex=[&](const scx2::State& state,scx2::Format format) {return usb_pressure ? hex(scx2::xinput_report(state,external_right_stick).value()) : hex(scx2::hid_report(state,scx2::Port::left,format).value());};
     auto raw_send=[&](int socket,const std::vector<std::uint8_t>& bytes,const sockaddr_in& destination) {
         if(!bytes.empty()) (void)sendto(socket,bytes.data(),bytes.size(),0,reinterpret_cast<const sockaddr*>(&destination),sizeof(destination));
     };
@@ -94,6 +99,7 @@ int main(int argc,char** argv) {
         if(!work) return false;
         ++completed;
         if(completed_buttons.size()<1024) completed_buttons.push_back(work->state.buttons);
+        if(completed_hid.size()<1024) completed_hid.push_back(output_hex(work->state,work->format));
         auto reply=receiver.complete_report(work->ticket,true,now());
         if(reply) last_sequence=reply->sequence;
         if(known) send(reply,peer);
@@ -115,12 +121,13 @@ int main(int argc,char** argv) {
             else if(op=="discard") { discard=arg=="on"; std::cout<<"OK"<<std::endl; }
             else if(op=="backend") { pressure.available=arg=="on";receiver.poll(now());std::cout<<"OK"<<std::endl; }
             else if(op=="backend_fail") { pressure.accept=arg!="on";std::cout<<"OK"<<std::endl; }
-            else if(op=="pressure") std::cout<<pressure.output.left<<' '<<pressure.output.right<<std::endl;
+            else if(op=="pressure") {const auto value=usb_pressure ? receiver.completed_output().triggers : pressure.output;std::cout<<value.left<<' '<<value.right<<std::endl;}
             else if(op=="pressure_reports") { for(auto value:pressure.applied)std::cout<<value.left<<':'<<value.right<<',';std::cout<<std::endl; }
             else if(op=="drop_ack") { drop_ack=true; std::cout<<"OK"<<std::endl; }
             else if(op=="complete") { std::cout<<(complete()?"DONE":"EMPTY")<<std::endl; }
-            else if(op=="output") std::cout<<hex(scx2::hid_report(receiver.completed_output()).value())<<std::endl;
+            else if(op=="output") std::cout<<output_hex(receiver.completed_output(),receiver.completed_format())<<std::endl;
             else if(op=="status") std::cout<<receiver.active()<<' '<<receiver.armed()<<' '<<received<<' '<<rejected<<' '<<completed<<' '<<last_sequence<<' '<<receiver.queued()<<std::endl;
+            else if(op=="hid_reports") {for(const auto& report:completed_hid)std::cout<<report<<',';std::cout<<std::endl;}
             else if(op=="reports") { for(auto buttons:completed_buttons)std::cout<<buttons<<',';std::cout<<std::endl; }
             else if(op=="foreign" && known) { raw_send(foreign,unhex(arg),peer);std::cout<<"OK"<<std::endl; }
             else if(op=="send_old" && old_known) { raw_send(fd,unhex(arg),old_peer);std::cout<<"OK"<<std::endl; }

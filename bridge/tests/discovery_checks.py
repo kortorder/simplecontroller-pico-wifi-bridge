@@ -79,6 +79,21 @@ class DiscoveryChecks(unittest.TestCase):
         self.assertEqual(discovery.stop(session, offer), expected)
         self.assertIsNone(discovery.stop(session, discovery.ready(bytes.fromhex(by_name["unavailable"]["hex"]), session)))
 
+    def test_xinput_wire_requires_exact_capability_and_preserves_release_format(self):
+        vectors = json.loads((ROOT / "fixtures/scx2-usb-pressure-wire.json").read_text())["vectors"]
+        by_name = {v["name"]: v for v in vectors}
+        session = bytes.fromhex(by_name["zen-hello"]["session"])
+        self.assertEqual(discovery.hello(session, 5).hex(), by_name["zen-hello"]["hex"])
+        data = bytes.fromhex(by_name["zen-ready"]["hex"])
+        offer = discovery.ready(data, session, 5)
+        self.assertTrue(offer[2])
+        self.assertIsNone(discovery.ready(data, session))
+        for cap in (0,1,2,3,5,255):
+            self.assertIsNone(discovery.ready(data[:7]+bytes([cap])+data[8:],session,5))
+        expected = bytes.fromhex(by_name["zen-stop-max"]["hex"][:-16]+"0000000000000001")
+        self.assertEqual(discovery.stop(session,offer,5),expected)
+        self.assertRaises(discovery.DiscoveryError,discovery.hello,session,3)
+
     def test_strict_ready_validation(self):
         session = b"s" * 16
         data = discovery.HEADER.pack(b"SCX2", 2, 2, 1, 0, session, b"b"*16, b"c"*16, 0)
@@ -132,9 +147,15 @@ class DiscoveryChecks(unittest.TestCase):
         self.assertEqual(query.call_count,2)
 
     def test_actual_cpp_receiver_never_arms_and_probe_offer_is_released(self):
+        self.actual_cpp_probe([],2)
+
+    def test_actual_xinput_receiver_never_arms_and_probe_offer_is_released(self):
+        self.actual_cpp_probe(["--xinput-backend"],5)
+
+    def actual_cpp_probe(self, arguments, version):
         executable = os.environ.get("SC_DISCOVERY_PEER")
         self.assertIsNotNone(executable, "run with the actual compiled C++ loopback peer")
-        peer = subprocess.Popen([executable], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
+        peer = subprocess.Popen([executable]+arguments, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
         def line():
             self.assertTrue(select.select([peer.stdout],[],[],2)[0], "peer reply timeout")
             return peer.stdout.readline().strip()
@@ -143,7 +164,7 @@ class DiscoveryChecks(unittest.TestCase):
         try:
             port = int(line().split()[1])
             self.assertEqual(command("auto on"),"OK")
-            self.assertEqual(discovery.discover("127.0.0.1", NETWORK, "127.0.0.1", port, 0.2), [{"ip":"127.0.0.1","port":port,"hid_ready":True}])
+            self.assertEqual(discovery.discover("127.0.0.1", NETWORK, "127.0.0.1", port, 0.2, version), [{"ip":"127.0.0.1","port":port,"hid_ready":True}])
             status = command("status").split()
             self.assertEqual(status[:2],["0","0"])
             self.assertEqual(status[2],"3")  # HELLO, same-session HELLO, STOP; no STATE.

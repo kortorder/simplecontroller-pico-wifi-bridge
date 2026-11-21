@@ -82,7 +82,7 @@ class PrivateBuildChecks(unittest.TestCase):
                     self.assertFalse((output/"redacted-manifest.json").exists())
 
     def test_board_selection_reaches_cmake_and_manifest(self):
-        for arguments,board,platform in [([],"pico_w","rp2040"),(["--board","pico2_w"],"pico2_w","rp2350-arm-s")]:
+        for arguments,board,platform in [([],"pico_w","rp2040"),(["--board","pico2_w"],"pico2_w","rp2350-arm-s"),(["--usb-output","xinput","--xinput-right-stick","external"],"pico_w","rp2040"),(["--usb-output","xac","--trigger-output","mcp4251"],"pico_w","rp2040"),(["--chair-relay-address","192.0.2.20"],"pico_w","rp2040")]:
             with tempfile.TemporaryDirectory() as directory:
                 root=Path(directory);country=root/"sdk/lib/cyw43-driver/src/cyw43_country.h"
                 country.parent.mkdir(parents=True);country.write_text("#define CYW43_COUNTRY_USA CYW43_COUNTRY('U','S',0)")
@@ -99,8 +99,28 @@ class PrivateBuildChecks(unittest.TestCase):
                 self.assertIn("-DPICO_BOARD="+board,commands[0])
                 self.assertEqual((result["board"],result["platform"]),(board,platform))
                 self.assertFalse(result["deployable"])
+                self.assertEqual(result["configuration"]["usb_output"], "xinput" if "xinput" in arguments else "xac")
+                self.assertEqual(result["configuration"]["xinput_right_stick"], "external" if "external" in arguments else "phone")
+                self.assertIn("-DSC_USB_XINPUT="+("ON" if "xinput" in arguments else "OFF"),commands[0])
+                self.assertIn("-DSC_XINPUT_EXTERNAL_RS="+("ON" if "external" in arguments else "OFF"),commands[0])
+                relay = "--chair-relay-address" in arguments
+                self.assertIn("-DSC_CHAIR_RELAY="+("ON" if relay else "OFF"),commands[0])
+                self.assertEqual(result["configuration"]["chair_relay"],relay)
+                self.assertEqual(result["configuration"]["chair_relay_port"],42737 if relay else None)
+                self.assertNotIn("192.0.2.20",json.dumps(result))
         with patch.object(build,"check_dependencies",side_effect=AssertionError("must not run")), contextlib.redirect_stderr(io.StringIO()):
             self.assertRaises(SystemExit,build.main,["--board","pico"])
+
+    def test_chair_relay_rejects_bad_address_and_xinput_before_dependencies(self):
+        with patch.object(build,"check_dependencies",side_effect=AssertionError("must not run")):
+            for value in ["hostname.local","0.0.0.0","127.0.0.1","255.255.255.255","224.0.0.1","::1","192.0.2.20\n#error"]:
+                self.assertRaises(build.BuildError,build.main,["--chair-relay-address",value])
+            self.assertRaises(build.BuildError,build.main,["--usb-output","xinput","--chair-relay-address","192.0.2.20"])
+
+    def test_chair_relay_header_additive_and_escaped(self):
+        plain=build.header(self.config()); relay=build.header(self.config(),"192.0.2.20")
+        self.assertTrue(relay.startswith(plain));self.assertIn("#define SC_CHAIR_RELAY_ADDRESS",relay)
+        self.assertNotIn("SC_CHAIR_RELAY_ADDRESS",plain)
 
     def test_shared_test_identity_requires_explicit_compile_only_choice(self):
         normal=build.public_compile_config();bench=build.public_compile_config(True)
@@ -109,6 +129,13 @@ class PrivateBuildChecks(unittest.TestCase):
         self.assertFalse(bench["usb"]["power_reviewed"])
         with patch.object(build,"check_dependencies",side_effect=AssertionError("must not run")):
             self.assertRaises(build.BuildError,build.main,["--mode","private","--config","/unread","--test-usb-identity"])
+
+    def test_incompatible_usb_modes_rejected_before_dependencies(self):
+        with patch.object(build,"check_dependencies",side_effect=AssertionError("must not run")):
+            self.assertRaises(build.BuildError,build.main,["--usb-output","xinput","--trigger-output","mcp4251"])
+            self.assertRaises(build.BuildError,build.main,["--xinput-right-stick","external"])
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertRaises(SystemExit,build.main,["--usb-output","guess"])
 
     def test_failed_validation_does_not_create_output(self):
         with tempfile.TemporaryDirectory() as directory:
