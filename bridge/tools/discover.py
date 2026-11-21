@@ -28,27 +28,29 @@ class DiscoveryError(Exception):
     pass
 
 
-def hello(session):
-    return HEADER.pack(b"SCX2", 2, 1, 0, 0, session, ZERO, ZERO, 0)
+def hello(session, version=2):
+    if version not in (2, 5):
+        raise DiscoveryError("Discovery supports XAC format2 or XInput format5 only.")
+    return HEADER.pack(b"SCX2", version, 1, 0, 4 if version == 5 else 0, session, ZERO, ZERO, 0)
 
 
-def ready(data, session):
-    if len(data) != HEADER.size:
+def ready(data, session, expected_version=2):
+    if expected_version not in (2, 5) or len(data) != HEADER.size:
         return None
     magic, version, kind, flags, reserved, actual_session, boot, challenge, sequence = HEADER.unpack(data)
-    if (magic != b"SCX2" or version != 2 or kind != 2 or flags not in (0, 1)
-            or reserved or actual_session != session or sequence or boot == ZERO):
+    if (magic != b"SCX2" or version != expected_version or kind != 2 or flags not in (0, 1)
+            or reserved != (4 if version == 5 and flags == 1 else 0) or actual_session != session or sequence or boot == ZERO):
         return None
     if (flags == 1) != (challenge != ZERO):
         return None
     return boot, challenge, flags == 1
 
 
-def stop(session, offer):
+def stop(session, offer, version=2):
     boot, challenge, hid_ready = offer
     if not hid_ready:
         return None
-    return HEADER.pack(b"SCX2", 2, 5, 0, 0, session, boot, challenge, 1)
+    return HEADER.pack(b"SCX2", version, 5, 0, 0, session, boot, challenge, 1)
 
 
 def mac_network(interface=None):
@@ -76,14 +78,14 @@ def mac_network(interface=None):
     return str(local), network, str(network.broadcast_address)
 
 
-def discover(local, network, destination, port=PORT, timeout=2.0):
+def discover(local, network, destination, port=PORT, timeout=2.0, version=2):
     if not 1 <= port <= 65535 or not 0.05 <= timeout <= 5:
         raise DiscoveryError("Port or timeout is outside the supported bounds.")
     target = ipaddress.IPv4Address(destination)
     if target not in network or target.is_multicast or target.is_unspecified:
         raise DiscoveryError("Discovery must stay within the selected local IPv4 network.")
     session = uuid.uuid4().bytes
-    probe = hello(session)
+    probe = hello(session, version)
     candidates = {}
     found = []
     received = 0
@@ -97,7 +99,7 @@ def discover(local, network, destination, port=PORT, timeout=2.0):
         def release(endpoint, candidate):
             if candidate["stopped"]:
                 return
-            packet = stop(session, candidate["offer"])
+            packet = stop(session, candidate["offer"], version)
             if packet is not None:
                 try:
                     channel.sendto(packet, endpoint)
@@ -119,7 +121,7 @@ def discover(local, network, destination, port=PORT, timeout=2.0):
                 if (endpoint[1] != port or address not in network or address.is_multicast
                         or address.is_unspecified or (network.prefixlen < 31 and address in (network.network_address, network.broadcast_address))):
                     continue
-                offer = ready(data, session)
+                offer = ready(data, session, version)
                 if offer is None:
                     continue
                 candidate = candidates.get(endpoint)
@@ -141,6 +143,7 @@ def discover(local, network, destination, port=PORT, timeout=2.0):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--usb-output", choices=["xac", "xinput"], default="xac", help="Probe the existing XAC format or the new XInput/Zen format")
     parser.add_argument("--interface", help="Mac interface; otherwise use the default route")
     parser.add_argument("--host", help="Loopback only: explicit destination for isolated tests")
     parser.add_argument("--port", type=int, default=PORT)
@@ -156,7 +159,7 @@ def main(argv=None):
         if args.port != PORT:
             raise DiscoveryError("Network discovery uses only the bridge's fixed SCX2 port 42736.")
         local, network, destination = mac_network(args.interface)
-    results = discover(local, network, destination, args.port, args.timeout)
+    results = discover(local, network, destination, args.port, args.timeout, 5 if args.usb_output == "xinput" else 2)
     if args.json:
         print(json.dumps({"bridges": results, "controller_states_sent": 0}))
     elif results:
