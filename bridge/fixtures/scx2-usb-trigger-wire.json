@@ -1,0 +1,181 @@
+{
+  "contract": "SCX2 USB button triggers format4",
+  "triggerEncoding": "Only UInt16 big-endian 0 (released) or65535 (pressed); intermediate values rejected. App explicit USB mode maps anypositive request to65535 without editing saved profiles.",
+  "sequenceNote": "Decimal strings preserve UInt64.",
+  "vectors": [
+    {
+      "name": "usb-hello",
+      "format": 4,
+      "kind": 1,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "00000000000000000000000000000000",
+      "challenge": "00000000000000000000000000000000",
+      "sequenceDecimal": "0",
+      "hidReady": false,
+      "capabilities": 2,
+      "state": null,
+      "hex": "534358320401000200112233445566778899aabbccddeeff00000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "name": "usb-unavailable",
+      "format": 4,
+      "kind": 2,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "00000000000000000000000000000000",
+      "sequenceDecimal": "0",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": null,
+      "hex": "534358320402000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001000000000000000000000000000000000000000000000000"
+    },
+    {
+      "name": "usb-ready",
+      "format": 4,
+      "kind": 2,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "0",
+      "hidReady": true,
+      "capabilities": 2,
+      "state": null,
+      "hex": "534358320402010200112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010000000000000000"
+    },
+    {
+      "name": "usb-neutral-first",
+      "format": 4,
+      "kind": 3,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "1",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": {
+        "buttonMask": 0,
+        "hat": 8,
+        "axes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leftPressure": 0,
+        "rightPressure": 0
+      },
+      "hex": "534358320403000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f00111223344556677880000000000000001000000000000000100000800000000000000000000000000"
+    },
+    {
+      "name": "usb-both-mixed",
+      "format": 4,
+      "kind": 3,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "9007199254740993",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": {
+        "buttonMask": 597,
+        "hat": 3,
+        "axes": [
+          32767,
+          -32767,
+          1234,
+          -4321
+        ],
+        "leftPressure": 65535,
+        "rightPressure": 65535
+      },
+      "hex": "534358320403000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010020000000000001025503007fff800104d2ef1fffffffff"
+    },
+    {
+      "name": "usb-ack",
+      "format": 4,
+      "kind": 4,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "9007199254740993",
+      "hidReady": true,
+      "capabilities": 0,
+      "state": null,
+      "hex": "534358320404010000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010020000000000001"
+    },
+    {
+      "name": "usb-stop-max",
+      "format": 4,
+      "kind": 5,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "18446744073709551615",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": null,
+      "hex": "534358320405000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f00111223344556677880000000000000001ffffffffffffffff"
+    },
+    {
+      "name": "usb-stopped-max",
+      "format": 4,
+      "kind": 6,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "18446744073709551615",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": null,
+      "hex": "534358320406000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f00111223344556677880000000000000001ffffffffffffffff"
+    },
+    {
+      "name": "usb-left-full",
+      "format": 4,
+      "kind": 3,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "2",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": {
+        "buttonMask": 0,
+        "hat": 8,
+        "axes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leftPressure": 65535,
+        "rightPressure": 0
+      },
+      "hex": "534358320403000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010000000000000002000008000000000000000000ffff0000"
+    },
+    {
+      "name": "usb-right-full",
+      "format": 4,
+      "kind": 3,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "2",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": {
+        "buttonMask": 0,
+        "hat": 8,
+        "axes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leftPressure": 0,
+        "rightPressure": 65535
+      },
+      "hex": "534358320403000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f0011122334455667788000000000000000100000000000000020000080000000000000000000000ffff"
+    }
+  ]
+}

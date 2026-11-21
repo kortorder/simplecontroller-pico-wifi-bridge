@@ -1,0 +1,181 @@
+{
+  "contract": "SCX2 USB proportional triggers format5 (Cronus Zen candidate)",
+  "triggerEncoding": "UInt16 big-endian 0..65535; preserves pressure. Capability4 is exclusive to XInput USB. No circuit output and no fallback to formats2/3/4.",
+  "sequenceNote": "Decimal strings preserve UInt64.",
+  "vectors": [
+    {
+      "name": "zen-hello",
+      "format": 5,
+      "kind": 1,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "00000000000000000000000000000000",
+      "challenge": "00000000000000000000000000000000",
+      "sequenceDecimal": "0",
+      "hidReady": false,
+      "capabilities": 4,
+      "state": null,
+      "hex": "534358320501000400112233445566778899aabbccddeeff00000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "name": "zen-unavailable",
+      "format": 5,
+      "kind": 2,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "00000000000000000000000000000000",
+      "sequenceDecimal": "0",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": null,
+      "hex": "534358320502000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001000000000000000000000000000000000000000000000000"
+    },
+    {
+      "name": "zen-ready",
+      "format": 5,
+      "kind": 2,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "0",
+      "hidReady": true,
+      "capabilities": 4,
+      "state": null,
+      "hex": "534358320502010400112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010000000000000000"
+    },
+    {
+      "name": "zen-neutral-first",
+      "format": 5,
+      "kind": 3,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "1",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": {
+        "buttonMask": 0,
+        "hat": 8,
+        "axes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leftPressure": 0,
+        "rightPressure": 0
+      },
+      "hex": "534358320503000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f00111223344556677880000000000000001000000000000000100000800000000000000000000000000"
+    },
+    {
+      "name": "zen-both-mixed",
+      "format": 5,
+      "kind": 3,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "9007199254740993",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": {
+        "buttonMask": 597,
+        "hat": 3,
+        "axes": [
+          32767,
+          -32767,
+          1234,
+          -4321
+        ],
+        "leftPressure": 32768,
+        "rightPressure": 45875
+      },
+      "hex": "534358320503000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010020000000000001025503007fff800104d2ef1f8000b333"
+    },
+    {
+      "name": "zen-ack",
+      "format": 5,
+      "kind": 4,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "9007199254740993",
+      "hidReady": true,
+      "capabilities": 0,
+      "state": null,
+      "hex": "534358320504010000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010020000000000001"
+    },
+    {
+      "name": "zen-stop-max",
+      "format": 5,
+      "kind": 5,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "18446744073709551615",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": null,
+      "hex": "534358320505000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f00111223344556677880000000000000001ffffffffffffffff"
+    },
+    {
+      "name": "zen-stopped-max",
+      "format": 5,
+      "kind": 6,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "18446744073709551615",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": null,
+      "hex": "534358320506000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f00111223344556677880000000000000001ffffffffffffffff"
+    },
+    {
+      "name": "zen-left-tenth",
+      "format": 5,
+      "kind": 3,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "2",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": {
+        "buttonMask": 0,
+        "hat": 8,
+        "axes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leftPressure": 6554,
+        "rightPressure": 0
+      },
+      "hex": "534358320503000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f001112233445566778800000000000000010000000000000002000008000000000000000000199a0000"
+    },
+    {
+      "name": "zen-right-full",
+      "format": 5,
+      "kind": 3,
+      "session": "00112233445566778899aabbccddeeff",
+      "boot": "102030405060708090a0b0c0d0e0f001",
+      "challenge": "11223344556677880000000000000001",
+      "sequenceDecimal": "2",
+      "hidReady": false,
+      "capabilities": 0,
+      "state": {
+        "buttonMask": 0,
+        "hat": 8,
+        "axes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leftPressure": 0,
+        "rightPressure": 65535
+      },
+      "hex": "534358320503000000112233445566778899aabbccddeeff102030405060708090a0b0c0d0e0f0011122334455667788000000000000000100000000000000020000080000000000000000000000ffff"
+    }
+  ]
+}
